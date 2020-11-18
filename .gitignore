@@ -1,0 +1,9 @@
+/sharedcollections/__pycache__
+/sharedcollections/*.pyc
+/sharedcollections_win32_env
+/sharedcollections_unix_env
+/SharedCollections.egg-info
+/build
+/dist
+/.vscode
+test.py
