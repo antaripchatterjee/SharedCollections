@@ -1,21 +1,33 @@
+class SharedQueue:
+    pass
+
 class SharedQueueAccessManager(object):
     def __repr__(self):
         return '{0}({1}, {2})'.format(type(self).__name__,
             id(self), 'initialized' if self.__initialized else 'deinitialized')
 
-    def __init__(self, sharedqueue ):
+    def __init__(self, sharedqueue: SharedQueue):
         super(SharedQueueAccessManager, self).__init__()
         self.__sharedqueue = sharedqueue
         self.__initialized = False
 
     def initialize(self):
+        '''
+        Do not call this function. It is made only for internal purpose.
+        '''
         self.__initialized = True
         return self
     
     def is_initialized(self):
+        '''
+        Do not call this function. It is made only for internal purpose.
+        '''
         return self.__initialized == True
     
     def de_initialize(self):
+        '''
+        Do not call this function. It is made only for internal purpose.
+        '''
         self.__initialized = False
 
     def __iter__(self):
@@ -34,9 +46,15 @@ class SharedQueueAccessManager(object):
         return self.__sharedqueue.qsize(self)
     
     def have_values(self):
+        '''
+        returns True if manager have access to any value of the queue
+        '''
         return len(self) != 0
     
     def detouch_queue(self):
+        '''
+        Do not call this function. It is made only for internal purpose.
+        '''
         self.de_initialize()
         self.__sharedqueue = None
     
@@ -46,7 +64,7 @@ class SharedQueueValue():
         return '{0}(value={1}, managers={2})'.format(
             type(self).__name__, self.__value, self.__managers)
 
-    def __init__(self, value, managers):
+    def __init__(self, value: object, managers: list):
         self.__value = value
         for manager in managers:
             if not isinstance(manager, SharedQueueAccessManager):
@@ -55,22 +73,37 @@ class SharedQueueValue():
     
     @property
     def value(self):
+        '''
+        returns value of this item
+        '''
         return self.__value
     
-    def is_valid_for(self, manager):
+    def is_valid_for(self, manager: SharedQueueAccessManager):
+        '''
+        returns True if manager is valid for this item
+        '''
         if not isinstance(manager, SharedQueueAccessManager):
             raise TypeError('positional argument `manager` must be a SharedQueue object')
         return manager in self.__managers
     
-    def remove_access(self, manager):
+    def remove_access(self, manager: SharedQueueAccessManager):
+        '''
+        Do not call this function. It is made only for internal purpose.
+        '''
         manager.de_initialize()
         self.__managers.remove(manager)
 
-    def add_access(self, manager):
+    def add_access(self, manager: SharedQueueAccessManager):
+        '''
+        Do not call this function. It is made only for internal purpose.
+        '''
         manager.initialize()
         self.__managers.add(manager)
     
     def is_empty(self):
+        '''
+        returns True if this item does not have any manager who can access it's value
+        '''
         return len(self.__managers) == 0
 
 
@@ -98,7 +131,10 @@ class SharedQueue():
         self.__items = list()
         self.__current_managers = set()
 
-    def put(self, item, no_manager_ok=False):
+    def put(self, item: SharedQueueValue, no_manager_ok=False):
+        '''
+        put value inside the queue
+        '''
         if len(self.__items) == self.__maxsize:
             raise OverflowError('Max limit({0}) of the count of item has been exceeded.'.format(self.__maxsize))
         if len(self.__current_managers) == 0:
@@ -111,7 +147,10 @@ class SharedQueue():
             self.__current_managers.update(managers)
             return item
     
-    def get(self, manager, default=None):
+    def get(self, manager: SharedQueueAccessManager, default=None):
+        '''
+        Get the data from the queue for the manager.
+        '''
         data = default
         data_found = False
         should_delete_item = True
@@ -130,7 +169,10 @@ class SharedQueue():
         return data
     
 
-    def qsize(self, manager):
+    def qsize(self, manager: SharedQueueAccessManager):
+        '''
+        returns the queue size for the manager
+        '''
         size = 0
         manager_found = False
         for item in self.__items:
@@ -143,21 +185,33 @@ class SharedQueue():
         return size
 
     def new_manager(self):
+        '''
+        creates a new manager and returns it
+        '''
         if len(self.__current_managers) == self.__maxmgr:
             raise OverflowError('Max limit({0}) of the count of managers has been exceeded.'.format(self.__maxmgr))
         manager = SharedQueueAccessManager(self)
         self.__current_managers.add(manager)
         return manager
     
-    def remove_manager(self, manager):
+    def remove_manager(self, manager: SharedQueueAccessManager):
+        '''
+        remove a manager from the queue
+        '''
         for _ in manager:
             pass
         manager.detouch_queue()
         self.__current_managers.remove(manager)
     
     def get_maxsize(self):
+        '''
+        returns the maximum length of the queue
+        '''
         return self.__maxsize
     
     def get_maxmgr(self):
+        '''
+        returns the maximum count of the managers of the queue
+        '''
         return self.__maxmgr
 

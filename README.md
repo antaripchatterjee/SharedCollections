@@ -1,14 +1,20 @@
 # SharedCollections
 
-SharedCollections contains, some commonly used data structure collections like queue and stack, which can be accessed by multiple access managers, individually. This version(0.0.1) is the Alpha release of the module which let us create a shared queue only.
+SharedCollections contains, some commonly used data structure collections like queue and stack, which can be accessed by multiple access managers, individually. Currently it is alpha stage.
 
 ## Version
 
-The current version of this module is `0.0.1`.
+The current version of this module is `0.0.2`.
+
+Check it by below command.
+
+```bash
+python3 -m sharedcollections.version
+```
 
 ## Dependencies
 
-No such external dependencies, and currently it is supported in python 3 only.
+No such external dependencies, and currently it is supported in python 3.5+ only.
 
 ## Installation
 
@@ -40,13 +46,18 @@ from sharedcollections.queue import SharedQueue
 
 if __name__ == "__main__":
     q = SharedQueue()
+    # Constructor of SharedQueue can take two named aruguments
+    # maxsize, default is None, decideds the maximum length of
+    # items of the queue.
+    # maxmgr. default is None, decideds the maximum count of the
+    # managers of the queue.
     mgr1 = q.new_manager()
     q.put(1)
     mgr2 = q.new_manager()
     q.put(2)
     q.put(3)
-    print('Length of mgr1', len(mg1))
-    print('Length of mgr2', len(mg1))
+    print('Length of mgr1', len(mgr1))
+    print('Length of mgr2', len(mgr1))
     for i in mgr1:
         print(i, end=' ')
     print('\n------------------------')

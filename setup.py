@@ -55,7 +55,7 @@ setup(
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
-        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.5",
         "Environment :: Console",
         "Development Status :: %d - %s"%(meta.development_status, status),
         "Intended Audience :: Developers",
